@@ -5,12 +5,20 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+      nombre:"",
+      sesion: "",
 
   },
   mutations: {
-
+    changeNombre (state, nombre) {
+      state.nombre = nombre;
+    },
+    changeSesion (state, sesion) {
+      state.sesion = sesion;
+    }
   },
-  actions: {
-
+  getters: {
+    nombre: state => state.nombre,
+    sesion: state => state.sesion,
   }
 })
