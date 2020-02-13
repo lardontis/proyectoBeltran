@@ -7,7 +7,7 @@
       <v-toolbar-items class="hidden-sm-and-down">
 
         <!--/////////////////C A M B I A R   M E N U S   D E L  T O P    B A R  ///////////////////////-->
-        <v-btn flat to="/">Cerrar Sesión</v-btn>
+        <v-btn flat  v-on:click="pacasa()" >Cerrar Sesión</v-btn>
       </v-toolbar-items>
     </v-toolbar>
 
@@ -48,8 +48,8 @@ export default {
   data() {
     return {
       items: [                                                        //
-        { title: "Cerrar Sesión", icon: "supervised_user_circle" }, // => Cambiar Menús del Slider
-      ],                                                             //
+        { title: "Cerrar Sesión", icon: "supervised_user_circle" },   // => Cambiar Menús del Slider
+      ],                                                              //
       right: null,
       drawer: false,
       counter: 0,
@@ -57,7 +57,10 @@ export default {
   },
   methods: {
     pacasa(){
+      this.$store.commit("clearResults");
       this.$router.push("/")
+
+      console.log(this.$store.getters.result);
     },
     estadisticas(){
       this.counter ++;

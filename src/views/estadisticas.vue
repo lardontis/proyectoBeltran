@@ -39,7 +39,7 @@ export default {
   methods: {},
   mounted() {
     axios
-      .get("https://proyectobeltran-b9287.firebaseio.com/valoraciones.json")
+      .get("https://proyectobeltran-2d5ba.firebaseio.com/valoraciones.json")
       .then(result => {
         this.contenido = result.data;
       console.log(this.contenido);

@@ -1,0 +1,14 @@
+{
+    "1":{
+        "path": "audio1.mp3",
+        "nombre": "Audio 1"
+    },
+    "2":{
+        "path": "audio2.mp3",
+        "nombre": "Audio 2"
+    },
+    "3":{
+        "path": "audio3.mp3",
+        "nombre": "Audio 3"
+    }
+}

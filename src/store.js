@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
       nombre:"",
       sesion: "",
+      results: {}
 
   },
   mutations: {
@@ -15,10 +16,17 @@ export default new Vuex.Store({
     },
     changeSesion (state, sesion) {
       state.sesion = sesion;
-    }
+    },
+    saveResults (state, results) {
+      state.results = results;
+    },
+    clearResults (state) {
+      state.results = {};
+    },
   },
   getters: {
     nombre: state => state.nombre,
     sesion: state => state.sesion,
+    results: state => state.results,
   }
 })

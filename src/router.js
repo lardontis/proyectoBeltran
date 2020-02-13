@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import home from "./components/home.vue"
-import login from "./components/login.vue"
-import estadisticas from "./components/estadisticas.vue"
+import sesion1 from "./views/sesion1.vue"
+import sesion2 from "./views/sesion2.vue"
+import login from "./views/login.vue"
+import banner from "./components/banner.vue"
+import estadisticas from "./views/estadisticas.vue"
 
 Vue.use(Router)
 
@@ -11,9 +13,14 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/home',
-      name: 'home',
-      component: home
+      path: '/sesion1',
+      name: 'sesion1',
+      component: sesion1
+    },
+    {
+      path: '/sesion2',
+      name: 'sesion2',
+      component: sesion2
     },
     {
       path: '/',
@@ -24,6 +31,11 @@ export default new Router({
       path: '/estadisticas',
       name: 'estadisticas',
       component: estadisticas
+    },
+    {
+      path: '/banner',
+      name: 'banner',
+      component: banner
     },
   ]
 })

@@ -30,7 +30,7 @@
 export default {
   data() {
     return {
-      items: ["Sesión 1", "Sesión 2", "Sesión 3"],
+      items: ["Sesión 1", "Sesión 2"],
       name: "",
       selected: "nothing",
       snackbar: false,
@@ -43,10 +43,13 @@ export default {
       this.$store.commit("changeSesion", this.selected);
       if (this.name.length <= 0) {
         this.snackbar= true;
-      } else if(this.selected == "nothing"){
+      } else if (this.selected == "nothing"){
         this.snackbar= true;
       }else {
-        this.$router.push("/home");
+        if (this.selected == "Sesión 1")
+          this.$router.push("/sesion1")
+        else
+          this.$router.push("/sesion2")
       }
     }
   }

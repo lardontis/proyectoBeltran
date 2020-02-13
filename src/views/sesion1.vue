@@ -1,18 +1,12 @@
 <template>
   <div>
-    <nav-bar/>
-
-    <div class="pestañitas">
-      <v-btn
-        v-on:click="cambioDePestaña(index+1)"
-        v-for="(audios, index) in totalDeAudios"
-        :key="index"
-        color="grey lighten-1"
-      >Audio: {{parseInt(index + 1)}}</v-btn>
-    </div>
+    <nav-bar />
     <transition-group name="fade">
       <div key="uno" v-if="loading" class="lds-dual-ring palcentro"></div>
       <div key="2" v-else class="homeWrapper">
+        <v-btn class="iconButton" v-on:click="infoButtonAction()" color="#12B0DE">
+          <v-icon>info</v-icon>
+        </v-btn>
         <div class="audio">
           <v-card style="text-align: center">
             <v-card-text>
@@ -25,18 +19,14 @@
                 <v-icon>autorenew</v-icon>
               </v-btn>
               <v-slider v-if="showPercentage" @click.native="setPosition()" v-model="percentage"></v-slider>
-              <v-slider v-else  v-model="percentages"></v-slider>
+              <v-slider v-else v-model="percentages"></v-slider>
             </v-card-text>
             <audio
               v-on:ended="finiquitao()"
               id="player"
               ref="player"
-              :src="require(`../assets/audios/${selectedAudio}`)"
+              :src="require(`../assets/audiosPrueba/${selectedAudio}`)"
             ></audio>
-
-            <v-card-text>
-              <v-slider v-model="votacion" :tick-labels="escala" :max="4" step="1" tick-size="3"></v-slider>
-            </v-card-text>
           </v-card>
           <div class="anteriorYSiguiente">
             <v-btn v-on:click="anterior()" class="botonSiguiente" color="orange">Anterior</v-btn>
@@ -54,22 +44,22 @@
 
     <v-layout row justify-center>
       <v-dialog v-model="dialog" persistent max-width="290">
-        <template v-slot:activator="{ on }"></template>
+        <template></template>
         <v-card>
           <v-card-title class="headline">Está seguro de que quiere terminar?</v-card-title>
           <v-card-text>En un lugar de la mancha de cuyo nombre no quiero acordarme blablabla y yes me caguen la puta, esto no me seas ruina y cámbialo xd</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="orange darken-1" flat @click="dialog = false">Aún No</v-btn>
-            <v-btn color="orange darken-1" flat @click="guardarDatos()">De Acuerdo</v-btn>
+            <v-btn color="orange darken-1" flat @click="$router.push('/')">De Acuerdo</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-layout>
 
     <div class="divConFotos">
-      <img class="fotoAudias" src="../assets/fotos/fotoaudias.jpg" alt>
-    <img class="fotoUam" src="../assets/fotos/fotoUam.jpg" alt>
+      <img class="fotoAudias" src="../assets/fotos/fotoaudias.jpg" alt />
+      <img class="fotoUam" src="../assets/fotos/fotoUam.jpg" alt />
     </div>
   </div>
 </template>
@@ -78,8 +68,8 @@
 const formatTime = second =>
   new Date(second * 1000).toISOString().substr(11, 8);
 
-import navBar from "./navigationBar.vue";
-import audioJson from "../assets/audios.json";
+import navBar from "../components/navigationBar.vue";
+import audioJson from "../assets/audiosPrueba.json";
 import axios from "axios";
 export default {
   name: "vuetify-audio",
@@ -114,7 +104,7 @@ export default {
       paused: false,
       showPercentage: false,
       percentage: 0,
-      percentages:0,
+      percentages: 0,
       selectedAudio: "audio0.mp3",
       escala: ["1", "2", "3", "4", "5"],
       votacion: 0,
@@ -123,13 +113,12 @@ export default {
       resultadoDeVotaciones: new Object(),
       aunSinTerminar: true,
       dialog: false,
-      loading: false
+      loading: false,
+      alreadyVoted: false
     };
   },
   methods: {
     siguiente() {
-      this.resultadoDeVotaciones[this.counter - 1] =
-        this.votacion + 1 + " puntos para el Audio: " + this.counter;
       if (this.counter == this.totalDeAudios) {
         this.aunSinTerminar = false;
         return;
@@ -139,11 +128,9 @@ export default {
         this.audio.currentTime = 0;
         this.votacion = 0;
       }
-    console.log(this.selectedAudio);
     },
     anterior() {
-      this.resultadoDeVotaciones[this.counter - 1] =
-        this.votacion + 1 + " puntos para el Audio: " + this.counter;
+    
       if (this.counter <= 1) {
         return;
       } else {
@@ -153,34 +140,12 @@ export default {
         this.votacion = 0;
         this.aunSinTerminar = true;
       }
-    console.log(this.selectedAudio);
     },
     finalizar() {
       this.dialog = true;
     },
-    guardarDatos() {
-      let resultadoFinal = new Object();
-      resultadoFinal.nombre = this.$store.getters.nombre;
-      resultadoFinal.sesion = this.$store.getters.sesion;
-      resultadoFinal.votacion = this.resultadoDeVotaciones;
-
-      axios
-        .post(
-          "https://proyectobeltran-b9287.firebaseio.com/valoraciones.json",
-          resultadoFinal
-        )
-        .then(result => {
-          console.log(result);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-
-      console.log(resultadoFinal);
-      this.$router.push("/");
-    },
     cambioDePestaña(event) {
-      let eventmenosuno= event-1;
+      let eventmenosuno = event - 1;
 
       this.resultadoDeVotaciones[event - 1] =
         this.votacion + 1 + " puntos para el Audio: " + eventmenosuno;
@@ -259,6 +224,10 @@ export default {
     finiquitao() {
       this.paused = this.playing = false;
       this.showPercentage = false;
+    },
+    infoButtonAction() {
+      this.$store.commit("saveResults", this.resultadoDeVotaciones);
+      this.$router.push("/banner");
     }
   },
   mounted() {
@@ -276,6 +245,7 @@ export default {
     }
     this.totalDeAudios = Object.keys(this.pathDeAudios).length;
     this.selectedAudio = this.pathDeAudios[this.counter];
+    this.resultadoDeVotaciones = this.$store.getters.results;
   },
   beforeDestroy() {
     this.audio.removeEventListener("timeupdate", this._handlePlayingUI);
@@ -322,24 +292,14 @@ export default {
     margin-top: -10rem;
     display: grid;
   }
-  .pestañitas {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .divConFotos img{
+  .divConFotos img {
     display: grid;
   }
 
-  img{
+  img {
     margin: auto;
     margin-top: 2rem;
     margin-bottom: 2rem;
-
   }
 }
 
@@ -354,25 +314,15 @@ export default {
     margin-top: -10rem;
     display: grid;
   }
-  .pestañitas {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
 
-  .divConFotos img{
+  .divConFotos img {
     display: grid;
   }
 
-  img{
+  img {
     margin: auto;
     margin-top: 2rem;
     margin-bottom: 2rem;
-
   }
 }
 
@@ -388,30 +338,26 @@ export default {
     margin-top: -10rem;
     display: grid;
   }
-  .pestañitas {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .divConFotos img{
+  .divConFotos img {
     display: grid;
   }
 
-  img{
+  img {
     margin: auto;
     margin-top: 2rem;
     margin-bottom: 2rem;
-
   }
 }
 
 @media only screen and (min-device-width: 1000px) and (max-device-width: 2024px) {
+  .iconButton {
+    position: absolute;
+    top: 10rem;
+    right: 5rem;
+  }
+
   .homeWrapper {
-    margin: 5vh 5vw;
+    margin: 17vh 5vw;
     display: grid;
     grid-gap: 3rem;
   }
@@ -433,10 +379,6 @@ export default {
     position: absolute;
     top: 72%;
     right: 7%;
-  }
-  .pestañitas {
-    margin-top: 2rem;
-    text-align: center;
   }
 }
 
